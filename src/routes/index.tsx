@@ -28,31 +28,14 @@ export function Router() {
           }
         >
           <Route
+            path="/"
+            element={<DashboardPage drawerId="main-drawer" />}
+          />
+          <Route
             path="/foods"
             element={<DietFoodPage />}
-        
           />
-
         </Route>
-
-       
-
-        <Route
-          element={
-            <ProtectedRoute>
-              <AppLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route
-            path="/"
-            element={
-              <DashboardPage drawerId="main-drawer" />
-            }
-          />
-
-        </Route>
-
       </Routes>
     </BrowserRouter>
   );

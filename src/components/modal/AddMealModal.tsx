@@ -13,7 +13,6 @@ import { MealState } from '@/types/meal';
 interface AddMealModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: () => void;
   typeMeal: MealCategory | null;
   onMealCreated: () => Promise<void>;
 }
@@ -23,7 +22,6 @@ export function AddMealModal({
   open,
   typeMeal,
   onClose,
-  //onSave,
   onMealCreated
 }: AddMealModalProps) {
   if(!typeMeal){

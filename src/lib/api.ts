@@ -22,32 +22,6 @@ export function clearToken(): void {
   localStorage.removeItem(TOKEN_KEY);
 }
 
-// Envia uma requisição JSON ao backend já com Bearer token (se houver).
-// Joga em caso de status != 2xx.
-export async function apiFetch<T>(
-  path: string,
-  init: RequestInit = {},
-): Promise<T> {
-  const token = getToken();
-  const res = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init.headers,
-    },
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`${res.status} ${res.statusText}: ${text}`);
-  }
-
-  return res.json() as Promise<T>;
-}
-
-
-
 api.interceptors.request.use((config) => {
   const token = getToken();
 

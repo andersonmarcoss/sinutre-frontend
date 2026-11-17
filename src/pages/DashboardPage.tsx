@@ -11,24 +11,12 @@ import { useAuth } from '@/context/AuthContext';
 import { Meal } from '@/types/mealSummary';
 import { api } from '@/lib/api';
 
-import {
-  //MACRO_SUMMARY,
-  //MEALS_SUMMARY,
-  // RECENT_MEALS,
-  // SAMPLE_MEAL_ITEMS,
-} from '@/data/mockData';
+
 import { useMealModal } from '@/hooks/useMealModal';
 
 interface DashboardPageProps {
   drawerId: string;
 }
-
-//const MODAL_MACROS = {
-//  carbs: 0,
-//  proteins: 0,
-//  fats: 0,
-//  calories: 0,
-//};
 
 export function DashboardPage({ drawerId }: DashboardPageProps) {
   const { user } = useAuth();
