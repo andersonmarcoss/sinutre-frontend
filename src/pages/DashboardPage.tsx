@@ -8,11 +8,9 @@ import { MealsList } from '@/components/meals/MealsList';
 import { MealsTable } from '@/components/meals/MealsTable';
 import { AddMealModal } from '@/components/modal/AddMealModal';
 import { useAuth } from '@/context/AuthContext';
-import { Meal } from '@/types/mealSummary';
-import { api } from '@/lib/api';
-
-
+import type { Meal } from '@/types/meal';
 import { useMealModal } from '@/hooks/useMealModal';
+import { getMeals } from '@/services/mealService';
 
 interface DashboardPageProps {
   drawerId: string;
@@ -20,9 +18,6 @@ interface DashboardPageProps {
 
 export function DashboardPage({ drawerId }: DashboardPageProps) {
   const { user } = useAuth();
-  if (!user){
-    return <></>
-  }
   const modal = useMealModal();
 
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -30,16 +25,18 @@ export function DashboardPage({ drawerId }: DashboardPageProps) {
 
   async function loadMeals() {
     try {
-      const response = await api.get('/meals');
-      setMeals(response.data);
+      const data = await getMeals();
+      setMeals(data);
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    loadMeals();
-  }, []);
+    if (user) {
+      loadMeals();
+    }
+  }, [user]);
 
   const mealsSummary = useMemo(() => {
     const today = new Date();
@@ -95,12 +92,14 @@ export function DashboardPage({ drawerId }: DashboardPageProps) {
         proteins: 0,
         fats: 0,
         calories: 0,
-
         caloriesGoal: 1000, //ainda não veio do banco de dados
       },
     );
   }, [meals]);
 
+  if (!user){
+    return <></>
+  }
 
   if (loading) {
     return (

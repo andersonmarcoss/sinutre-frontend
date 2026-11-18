@@ -1,11 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { FoodItem } from '@/types/meal';
 import { MealItemForm } from './MealItemForm';
 import { MealItemsTable } from './MealItemsTable';
 import { MealMacrosSummary } from './MealMacrosSummary';
 import { MealMetadataForm } from './MealMetadataForm';
 import { MealCategory } from '@/types/meal';
-import { MEAL_CATEGORY_BY_ID } from '@/constants/mealCategories';
 import { createMeal } from '@/services/mealService';
 
 import { MealState } from '@/types/meal';
@@ -17,26 +16,53 @@ interface AddMealModalProps {
   onMealCreated: () => Promise<void>;
 }
 
-
 export function AddMealModal({
   open,
   typeMeal,
   onClose,
   onMealCreated
 }: AddMealModalProps) {
-  if(!typeMeal){
-    return <></>
-  }
 
-  const category = MEAL_CATEGORY_BY_ID[typeMeal];
-  
   const [meal, setMeal] = useState<MealState>({
     description: '',
-    type: category.id,
+    type: typeMeal ?? '',
     eatTime: '',
   });
 
   const [items, setItems] = useState<FoodItem[]>([]);
+
+  useEffect(() => {
+    if (open && typeMeal) {
+      setMeal({
+        description: '',
+        type: typeMeal,
+        eatTime: '',
+      });
+      setItems([]);
+    }
+  }, [open, typeMeal]);
+
+  const macros = useMemo(
+    () =>
+      items.reduce(
+        (acc, item) => {
+          acc.carbs += item.carbs;
+          acc.proteins += item.protein;
+          acc.fats += item.fat;
+          acc.calories += item.calories;
+
+          return acc;
+        },
+        {
+          carbs: 0,
+          proteins: 0,
+          fats: 0,
+          calories: 0,
+          caloriesGoal: 0,
+        },
+      ),
+    [items],
+  );
 
   function handleAddItem(
     item: FoodItem,
@@ -71,28 +97,9 @@ export function AddMealModal({
     onClose();
   }
 
-  const macros = useMemo(
-    () =>
-      items.reduce(
-        (acc, item) => {
-          acc.carbs += item.carbs;
-          acc.proteins += item.protein;
-          acc.fats += item.fat;
-          acc.calories += item.calories;
-
-          return acc;
-        },
-        {
-          carbs: 0,
-          proteins: 0,
-          fats: 0,
-          calories: 0,
-          caloriesGoal: 0,
-        },
-      ),
-    [items],
-  );
-
+  if (!open || !typeMeal) {
+    return null;
+  }
 
   return (
     <div className={`modal ${open ? 'modal-open' : ''}`} role="dialog">

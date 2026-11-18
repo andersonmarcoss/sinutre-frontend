@@ -16,6 +16,7 @@ export function MealMetadataForm( {meal, setMeal} : MealMetadataProp) {
         <input
           id="meal-description"
           type="text"
+          value={meal.description}
           placeholder="Ex: almoço pós treino"
           className="input input-bordered w-full"
           onChange={(e) =>
@@ -31,7 +32,7 @@ export function MealMetadataForm( {meal, setMeal} : MealMetadataProp) {
         <select
           id="meal-category"
           className="select select-bordered w-full"
-          defaultValue={meal.type}
+          value={meal.type}
           disabled={true}
           onChange={(e) =>
                 setMeal({
@@ -55,6 +56,7 @@ export function MealMetadataForm( {meal, setMeal} : MealMetadataProp) {
         <input
           id="meal-datetime"
           type="datetime-local"
+          value={meal.eatTime}
           className="input input-bordered w-full"
           onChange={(e) =>
                 setMeal({

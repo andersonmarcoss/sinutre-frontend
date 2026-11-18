@@ -1,4 +1,4 @@
-import type { Meal } from '@/types/mealSummary';
+import type { Meal } from '@/types/meal';
 import { MealListItem } from './MealListItem';
 
 interface MealsListProps {

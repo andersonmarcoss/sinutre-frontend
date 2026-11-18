@@ -1,6 +1,6 @@
 import { DotsThreeVertical } from '@phosphor-icons/react';
 import { MEAL_CATEGORY_BY_ID } from '@/constants/mealCategories';
-import type { Meal } from '@/types/mealSummary';
+import type { Meal } from '@/types/meal';
 import { formatDate } from '@/utils/date';
 
 interface MealListItemProps {
