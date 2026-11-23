@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import type { Meal } from '@/types/meal';
 import { useMealModal } from '@/hooks/useMealModal';
 import { getMeals } from '@/services/mealService';
+import { isSameLocalDay, isSameLocalMonth } from '@/utils/date';
 
 interface DashboardPageProps {
   drawerId: string;
@@ -40,61 +41,33 @@ export function DashboardPage({ drawerId }: DashboardPageProps) {
 
   const mealsSummary = useMemo(() => {
     const today = new Date();
-
-    const total = meals.length;
-
-    const todayCount = meals.filter((meal) => {
-      const date = new Date(meal.eatTime);
-
-      return (
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-      );
-    }).length;
-
-    const monthCount = meals.filter((meal) => {
-      const date = new Date(meal.eatTime);
-
-      return (
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-      );
-    }).length;
-
     return {
-      total,
-      thisMonth: monthCount,
-      today: todayCount,
+      total: meals.length,
+      thisMonth: meals.filter((m) => isSameLocalMonth(m.eatTime, today)).length,
+      today: meals.filter((m) => isSameLocalDay(m.eatTime, today)).length,
     };
   }, [meals]);
 
   const macroSummary = useMemo(() => {
     const today = new Date();
-    return meals.filter((meal) => {
-      const date = new Date(meal.eatTime);
-      return (
-        date.getDay() === today.getDay() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
+    return meals
+      .filter((meal) => isSameLocalDay(meal.eatTime, today))
+      .reduce(
+        (acc, meal) => {
+          acc.carbs += meal.totals.carbs;
+          acc.proteins += meal.totals.proteins;
+          acc.fats += meal.totals.fats;
+          acc.calories += meal.totals.calories;
+          return acc;
+        },
+        {
+          carbs: 0,
+          proteins: 0,
+          fats: 0,
+          calories: 0,
+          caloriesGoal: 1000, // ainda não veio do banco de dados (será trocado no requisito 06)
+        },
       );
-    }).reduce(
-      (acc, meal) => {
-        acc.carbs += meal.totals.carbs;
-        acc.proteins += meal.totals.proteins;
-        acc.fats += meal.totals.fats;
-        acc.calories += meal.totals.calories;
-
-        return acc;
-      },
-      {
-        carbs: 0,
-        proteins: 0,
-        fats: 0,
-        calories: 0,
-        caloriesGoal: 1000, //ainda não veio do banco de dados
-      },
-    );
   }, [meals]);
 
   if (!user){
@@ -104,7 +77,7 @@ export function DashboardPage({ drawerId }: DashboardPageProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center w-full h-full">
-        <span className="text-gray-500">Carregando...</span>
+        <span className="text-base-content/60">Carregando...</span>
       </div>
     );
   }

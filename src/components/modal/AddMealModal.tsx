@@ -6,7 +6,7 @@ import { MealMacrosSummary } from './MealMacrosSummary';
 import { MealMetadataForm } from './MealMetadataForm';
 import { MealCategory } from '@/types/meal';
 import { createMeal } from '@/services/mealService';
-
+import { getApiError } from '@/lib/api';
 import { MealState } from '@/types/meal';
 
 interface AddMealModalProps {
@@ -31,7 +31,12 @@ export function AddMealModal({
 
   const [items, setItems] = useState<FoodItem[]>([]);
 
+  const [error, setError] = useState<string | null>(null)
+  
+  const [saving, setSaving] = useState(false)
+
   useEffect(() => {
+    setError(null)
     if (open && typeMeal) {
       setMeal({
         description: '',
@@ -84,17 +89,24 @@ export function AddMealModal({
   }
 
   async function handleSaveMeal() {
-    await createMeal({
-      ...meal,
-      items: items.map((item) => ({
-        foodId: item.foodId,
-        grams: item.grams,
-      })),
-    });
+    try {
+      setSaving(true);
+      setError(null);
+      await createMeal({
+        ...meal,
+        items: items.map((item) => ({
+          foodId: item.foodId,
+          grams: item.grams,
+        })),
+      });
 
-    await onMealCreated();
-
-    onClose();
+      await onMealCreated();
+      onClose();
+    } catch (err) {
+      setError(getApiError(err).message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   if (!open || !typeMeal) {
@@ -116,12 +128,14 @@ export function AddMealModal({
 
         <MealItemsTable items={items} onRemove={handleRemoveItem} />
 
+        {error && <div className="alert alert-error mb-4 text-sm">{error}</div>}
+
         <div className="modal-action">
           <button type="button" className="btn btn-ghost" onClick={onClose}>
             Cancelar
           </button>
-          <button type="button" className="btn btn-primary" onClick={handleSaveMeal}>
-            Salvar refeição
+          <button type="button" className="btn btn-primary" onClick={handleSaveMeal} disabled={saving}>
+            {saving ? 'Salvando...' : 'Salvar refeição'}
           </button>
         </div>
       </div>

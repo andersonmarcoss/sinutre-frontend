@@ -1,4 +1,5 @@
 import type { FoodItem } from '@/types/meal';
+import { formatNumber } from '@/utils/number';
 
 interface MealItemsTableProps {
   items: FoodItem[];
@@ -24,15 +25,15 @@ export function MealItemsTable({ items, onRemove }: MealItemsTableProps) {
           {items.map(item => (
             <tr key={item.id}>
               <td>{item.name}</td>
-              <td>{item.grams} g</td>
+              <td>{formatNumber(item.grams, 1)} g</td>
               <td>
                 <span className="badge badge-outline badge-primary">
-                  {item.calories} kcal
+                  {formatNumber(item.calories, 0)} kcal
                 </span>
               </td>
-              <td>{item.carbs} g</td>
-              <td>{item.protein} g</td>
-              <td>{item.fat} g</td>
+              <td>{formatNumber(item.carbs, 1)} g</td>
+              <td>{formatNumber(item.protein, 1)} g</td>
+              <td>{formatNumber(item.fat, 1)} g</td>
               <td>
                 <button
                   type="button"

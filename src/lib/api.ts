@@ -32,3 +32,22 @@ api.interceptors.request.use((config) => {
 
   return config;
 });
+
+export function getApiError(err: unknown) {
+  if (axios.isAxiosError(err)) {
+    const data = err.response?.data as {
+      error?: string;
+      fields?: Record<string, string>;
+    };
+    if (data?.error) {
+      return { message: data.error, fields: data.fields ?? {} };
+    }
+    if (!err.response) {
+      return {
+        message: 'Não foi possível conectar ao servidor.',
+        fields: {},
+      };
+    }
+  }
+  return { message: 'Erro inesperado. Tente novamente.', fields: {} };
+}

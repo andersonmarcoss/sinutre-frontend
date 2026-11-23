@@ -18,3 +18,26 @@ export function formatDateTime(
       minute: '2-digit',
     });
 }
+
+export function isSameLocalDay(
+  dateInput: string | Date,
+  reference = new Date(),
+) {
+  const date = new Date(dateInput);
+  return (
+    date.getDate() === reference.getDate() &&
+    date.getMonth() === reference.getMonth() &&
+    date.getFullYear() === reference.getFullYear()
+  );
+}
+
+export function isSameLocalMonth(
+  dateInput: string | Date,
+  reference = new Date(),
+) {
+  const date = new Date(dateInput);
+  return (
+    date.getMonth() === reference.getMonth() &&
+    date.getFullYear() === reference.getFullYear()
+  );
+}

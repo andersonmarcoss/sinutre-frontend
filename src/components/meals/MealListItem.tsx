@@ -2,6 +2,7 @@ import { DotsThreeVertical } from '@phosphor-icons/react';
 import { MEAL_CATEGORY_BY_ID } from '@/constants/mealCategories';
 import type { Meal } from '@/types/meal';
 import { formatDate } from '@/utils/date';
+import { formatNumber } from '@/utils/number';
 
 interface MealListItemProps {
   meal: Meal;
@@ -24,7 +25,7 @@ export function MealListItem({ meal, onActionClick }: MealListItemProps) {
           <p className="text-xs text-base-content/50">{formatDate(meal.eatTime)}</p>
         </div>
         <span className="badge badge-primary badge-outline badge-sm">
-          {meal.totals.calories} kcal
+          {formatNumber(meal.totals.calories, 0)} kcal
         </span>
         <button
           type="button"

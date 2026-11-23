@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createFood } from '@/services/foodService';
+import { getApiError } from '@/lib/api';
 
 interface AddFoodModalProps {
   modalId: string;
@@ -26,8 +27,11 @@ export function AddFoodModal({
 
   const [loading, setLoading] = useState(false);
 
+  const [error, setError] = useState<string | null>(null);
+
   async function handleSave() {
     try {
+      setError(null);
       setLoading(true);
 
       await createFood({
@@ -51,7 +55,8 @@ export function AddFoodModal({
           modalId,
         ) as HTMLDialogElement
       )?.close();
-    } finally {
+    } catch (err) { setError(getApiError(err).message); } 
+    finally {
       setLoading(false);
     }
   }
@@ -113,6 +118,8 @@ export function AddFoodModal({
             }
           />
         </div>
+
+        {error && <div className="alert alert-error mt-4 text-sm">{error}</div>}
 
         <div className="modal-action">
           <form method="dialog">

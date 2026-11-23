@@ -2,6 +2,7 @@ import { DotsThree } from '@phosphor-icons/react';
 import { MEAL_CATEGORY_BY_ID } from '@/constants/mealCategories';
 import type { Meal } from '@/types/meal';
 import { formatDate } from '@/utils/date';
+import { formatNumber } from '@/utils/number';
 
 interface MealsTableRowProps {
   meal: Meal;
@@ -19,7 +20,7 @@ export function MealsTableRow({ meal, onActionClick }: MealsTableRowProps) {
       <td className="font-semibold">{category.label}</td>
       <td>
         <span className="badge badge-primary badge-outline">
-          {meal.totals.calories} kcal
+          {formatNumber(meal.totals.calories, 0)} kcal
         </span>
       </td>
       <td className="text-center">
