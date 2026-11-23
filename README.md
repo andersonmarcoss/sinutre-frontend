@@ -59,6 +59,8 @@ O tema customizado `sinutre` (paleta verde) está definido em
 
 Antes da implementação das novas funcionalidades do Projeto Final, foi realizada uma refatoração completa no código-base dos dois repositórios (`sinutre-frontend` e `sinutre-backend`) para melhorar a organização, eliminar código morto e corrigir defeitos pré-existentes:
 
+> **Documentação detalhada (Notion):** Para mais detalhes técnicos (Melhorias 1 a 5), acesse o registro completo no Notion: [Ver detalhamento das melhorias](https://app.notion.com/p/Melhorias-no-c-digo-existente-Sinutre-realizadas-antes-das-adi-es-41bc373854db809b9883f0757dd4b96c?source=copy_link).
+
 ### 1. Limpeza de arquivos duplicados, código morto e consolidação de rotas (Frontend)
 - **Problema:** O frontend possuía pastas/arquivos duplicados sem uso (`src/contexts/AuthContext.tsx` e `src/routes/ProtectedRoute.tsx`), dados mockados obsoletos (`src/data/mockData.ts`), uma função `apiFetch` não utilizada em `src/lib/api.ts`, comentários de código morto e dois blocos idênticos de `<ProtectedRoute><AppLayout /></ProtectedRoute>` em `src/routes/index.tsx`.
 - **O que foi feito:**
