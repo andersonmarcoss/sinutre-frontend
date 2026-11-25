@@ -4,6 +4,8 @@ import { SidebarItem } from './SidebarItem';
 import { useNavigate } from 'react-router-dom';
 import { SignOut } from '@phosphor-icons/react';
 import { useAuth } from '@/context/AuthContext';
+import { useState } from 'react';
+import { ConfirmModal } from '../modal/ConfirmModal';
 
 interface SidebarProps {
   drawerId: string;
@@ -15,7 +17,10 @@ export function Sidebar({ drawerId }: SidebarProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
+
   function handleLogout() {
+    setConfirmLogoutOpen(false);
     logout();
     navigate('/login', { replace: true });
   }
@@ -65,7 +70,7 @@ export function Sidebar({ drawerId }: SidebarProps) {
 
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => setConfirmLogoutOpen(true)}
             className="btn btn-ghost btn-sm justify-start gap-3 w-full text-error hover:bg-error/10"
           >
             <SignOut size={20} />
@@ -73,6 +78,15 @@ export function Sidebar({ drawerId }: SidebarProps) {
           </button>
         </div>
       </div>
+      <ConfirmModal
+          open={confirmLogoutOpen}
+          title="Sair da conta"
+          message="Tem certeza que deseja encerrar sua sessão?"
+          confirmLabel="Sair"
+          confirmVariant="error"
+          onConfirm={handleLogout}
+          onCancel={() => setConfirmLogoutOpen(false)}
+      />
     </aside>
   );
 }
