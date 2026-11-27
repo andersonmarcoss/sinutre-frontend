@@ -7,6 +7,7 @@ interface ConfirmModalProps {
   confirmLabel?: string;
   cancelLabel?: string;
   confirmVariant?: 'primary' | 'error';
+  loading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -18,6 +19,7 @@ export function ConfirmModal({
   confirmLabel = 'Confirmar',
   cancelLabel = 'Cancelar',
   confirmVariant = 'primary',
+  loading = false,
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
@@ -35,15 +37,15 @@ export function ConfirmModal({
         <p className="py-4 text-base-content/80">{message}</p>
 
         <div className="modal-action">
-          <button type="button" className="btn btn-ghost" onClick={onCancel}>
+          <button type="button" className="btn btn-ghost" onClick={!loading ? onCancel : undefined} disabled={loading}>
             {cancelLabel}
           </button>
-          <button type="button" className={confirmBtnClass} onClick={onConfirm}>
-            {confirmLabel}
+          <button type="button" className={confirmBtnClass} onClick={onConfirm} disabled={loading}>
+            {loading ? 'Aguarde...' : confirmLabel}
           </button>
         </div>
       </div>
-      <div className="modal-backdrop" onClick={onCancel} />
+      <div className="modal-backdrop" onClick={!loading ? onCancel : undefined} />
     </div>,
     document.body,
   );
