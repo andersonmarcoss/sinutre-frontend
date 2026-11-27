@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Trash } from '@phosphor-icons/react';
+import { Plus, Trash, PencilSimple } from '@phosphor-icons/react';
 import { SimpleHeader } from '@/components/layout/SimpleHeader';
 import { AddFoodModal } from '@/components/modal/AddFoodModal';
 import { deleteFood, getFoods } from '@/services/foodService';
@@ -7,14 +7,15 @@ import type { Food } from '@/types/food';
 import { getApiError } from '@/lib/api';
 import { ConfirmModal } from '@/components/modal/ConfirmModal';
 
-const MODAL_ID = 'create-food-modal';
-
 export function DietFoodPage() {
   const [foods, setFoods] = useState<Food[]>([]);
   const [loading, setLoading] = useState(true);
   const [foodToDelete, setFoodToDelete] = useState<Food | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingFood, setEditingFood] = useState<Food | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   async function loadFoods() {
     try {
@@ -32,6 +33,7 @@ export function DietFoodPage() {
     if (!foodToDelete) return;
 
     try {
+      setSuccess(null);
       setDeleting(true);
       setError(null);
       await deleteFood(foodToDelete.id);
@@ -43,6 +45,27 @@ export function DietFoodPage() {
     } finally {
       setDeleting(false);
     }
+  }
+
+  function handleOpenCreate() {
+  setSuccess(null);
+  setEditingFood(null);
+  setModalOpen(true);
+  }
+
+  function handleOpenEdit(food: Food) {
+    setSuccess(null);
+    setEditingFood(food);
+    setModalOpen(true);
+  }
+
+  async function handleSaved(mode: 'create' | 'update') {
+    setSuccess(
+      mode === 'update'
+        ? 'Alimento alterado com sucesso!'
+        : 'Alimento cadastrado com sucesso!',
+    );
+    await loadFoods();
   }
 
   useEffect(() => {
@@ -69,6 +92,19 @@ export function DietFoodPage() {
         </div>
       )}
 
+      {success && (
+        <div className="alert alert-success mt-4 flex justify-between text-sm">
+          <span>{success}</span>
+          <button
+            type="button"
+            className="btn btn-ghost btn-xs"
+            onClick={() => setSuccess(null)}
+          >
+            Fechar
+          </button>
+        </div>
+   )}
+
       {loading ? (
         <p>Carregando...</p>
       ) : (
@@ -83,15 +119,26 @@ export function DietFoodPage() {
                   <h2 className="card-title">
                     {food.name || 'Alimento sem nome'}
                   </h2>
-                  <button
-                    type="button"
-                    onClick={() => setFoodToDelete(food)}
-                    className="btn btn-ghost btn-sm btn-square text-error hover:bg-error/10"
-                    aria-label={`Excluir ${food.name}`}
-                    title="Excluir alimento"
-                  >
-                    <Trash size={18} />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEdit(food)}
+                      className="btn btn-ghost btn-sm btn-square text-primary hover:bg-primary/10"
+                      aria-label={`Editar ${food.name}`}
+                      title="Editar alimento"
+                    >
+                      <PencilSimple size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFoodToDelete(food)}
+                      className="btn btn-ghost btn-sm btn-square text-error hover:bg-error/10"
+                      aria-label={`Excluir ${food.name}`}
+                      title="Excluir alimento"
+                    >
+                      <Trash size={18} />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
@@ -119,20 +166,16 @@ export function DietFoodPage() {
 
       <button
         className="btn btn-primary btn-circle btn-lg fixed bottom-6 right-6 shadow-lg z-50"
-        onClick={() =>
-          (
-            document.getElementById(
-              MODAL_ID,
-            ) as HTMLDialogElement
-          )?.showModal()
-        }
+        onClick={handleOpenCreate}
       >
         <Plus size={24} weight="bold" />
       </button>
 
       <AddFoodModal
-        modalId={MODAL_ID}
-        onCreated={loadFoods}
+        open={modalOpen}
+        food={editingFood}
+        onClose={() => setModalOpen(false)}
+        onSaved={handleSaved}
       />
       <ConfirmModal
         open={foodToDelete !== null}
