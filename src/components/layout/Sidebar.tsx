@@ -6,6 +6,7 @@ import { SignOut } from '@phosphor-icons/react';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 import { ConfirmModal } from '../modal/ConfirmModal';
+import { useTheme } from '@/hooks/useTheme';
 
 interface SidebarProps {
   drawerId: string;
@@ -15,6 +16,7 @@ export function Sidebar({ drawerId }: SidebarProps) {
   const expanded = true;
 
   const { user, logout } = useAuth();
+  const { theme, setTheme, themes } = useTheme();
   const navigate = useNavigate();
 
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
@@ -50,6 +52,34 @@ export function Sidebar({ drawerId }: SidebarProps) {
           ))}
         </ul>
         <div className="w-full p-4 border-t border-base-200 flex flex-col gap-3">
+                 <div className="flex items-center justify-between px-1">
+                  {expanded && (
+                    <span className="text-xs font-semibold uppercase tracking-wide text-base-content/60">
+                      Tema
+                    </span>
+                  )}
+                  <div className="flex items-center gap-2">
+                    {themes.map((item) => {
+                      const isSelected = theme === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          title={item.label}
+                          aria-label={`Tema ${item.label}`}
+                          aria-pressed={isSelected}
+                          onClick={() => setTheme(item.id)}
+                          className={`w-6 h-6 rounded-full border border-base-content/20 cursor-pointer transition-transform ${
+                            isSelected
+                              ? 'ring-2 ring-primary ring-offset-2 ring-offset-base-100 scale-110'
+                              : 'hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: item.swatch }}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
           {expanded && user && (
             <div className="flex items-center gap-3 px-1">
               {user.avatarUrl && (
