@@ -6,18 +6,23 @@ interface MacroStatsBarProps {
 }
 
 export function MacroStatsBar({ summary }: MacroStatsBarProps) {
+  const hasGoal = summary.caloriesGoal !== null;
+  const isOverGoal =
+    summary.caloriesGoal !== null &&
+    summary.calories > summary.caloriesGoal;
+
   return (
     <section className="stats stats-vertical lg:stats-horizontal shadow-sm w-full bg-base-100">
       <MacroStat label="Carboidratos" value={summary.carbs} unit="g" />
       <MacroStat label="Proteínas" value={summary.proteins} unit="g" />
       <MacroStat label="Gordura" value={summary.fats} unit="g" />
       <MacroStat
-        label="Calorias / Meta Diária"
+        label={hasGoal ? 'Calorias / Meta Diária' : 'Calorias Hoje'}
         value={summary.calories}
         unit="kcal"
-        variant={summary.calories > summary.caloriesGoal ? 'danger' : 'highlight'}
+        variant={isOverGoal ? 'danger' : 'highlight'}
         goal={summary.caloriesGoal}
-        hint="kcal"
+        hint={hasGoal ? 'kcal' : 'Meta não cadastrada'}
       />
     </section>
   );

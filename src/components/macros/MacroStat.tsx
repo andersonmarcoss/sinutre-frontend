@@ -5,7 +5,7 @@ interface MacroStatProps {
   value: number;
   unit: string;
   variant?: 'default' | 'highlight' | 'danger';
-  goal?: number;
+  goal?: number | null;
   hint?: string;
 }
 
@@ -40,7 +40,7 @@ export function MacroStat({
     <div className={wrapperClasses}>
       <div className="stat-value text-2xl lg:text-4xl mb-1">
         {formatNumber(value, unit === 'kcal' ? 0 : 1)}
-        {goal !== undefined ? (
+        {goal !== undefined && goal !== null ? (
           <span className={`text-sm lg:text-xl font-normal ${valueMutedClass}`}>
             {' '}/ {formatNumber(goal, 0)}
           </span>

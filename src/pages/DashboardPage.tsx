@@ -12,6 +12,10 @@ import type { Meal } from '@/types/meal';
 import { useMealModal } from '@/hooks/useMealModal';
 import { getMeals } from '@/services/mealService';
 import { isSameLocalDay, isSameLocalMonth } from '@/utils/date';
+import { Link } from 'react-router-dom';
+import { getProfile } from '@/services/profileService';
+import type { Profile } from '@/types/profile';
+import { getApiError } from '@/lib/api';
 
 interface DashboardPageProps {
   drawerId: string;
@@ -23,11 +27,20 @@ export function DashboardPage({ drawerId }: DashboardPageProps) {
 
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function loadMeals() {
+  async function loadDashboardData() {
     try {
-      const data = await getMeals();
-      setMeals(data);
+      setError(null);
+      const [mealsData, profileData] = await Promise.all([
+        getMeals(),
+        getProfile(),
+      ]);
+      setMeals(mealsData);
+      setProfile(profileData);
+    } catch (err) {
+      setError(getApiError(err).message);
     } finally {
       setLoading(false);
     }
@@ -35,7 +48,7 @@ export function DashboardPage({ drawerId }: DashboardPageProps) {
 
   useEffect(() => {
     if (user) {
-      loadMeals();
+      loadDashboardData();
     }
   }, [user]);
 
@@ -65,10 +78,10 @@ export function DashboardPage({ drawerId }: DashboardPageProps) {
           proteins: 0,
           fats: 0,
           calories: 0,
-          caloriesGoal: 1000, // ainda não veio do banco de dados (será trocado no requisito 06)
+          caloriesGoal: profile?.targetDietDaily ?? null,
         },
       );
-  }, [meals]);
+  }, [meals, profile]);
 
   if (!user){
     return <></>
@@ -91,6 +104,21 @@ export function DashboardPage({ drawerId }: DashboardPageProps) {
           avatarUrl={user.avatarUrl}
         />
 
+        {error && (
+          <div className="alert alert-error text-sm">{error}</div>
+        )}
+
+        {!error && profile === null && (
+          <div className="alert alert-info shadow-sm flex flex-wrap items-center justify-between gap-2">
+            <span className="text-sm">
+            Você ainda não cadastrou sua meta calórica diária, altura e peso.
+          </span>
+          <Link to="/profile" className="btn btn-sm btn-primary">
+            Cadastrar perfil
+          </Link>
+        </div>
+      )}
+
         <MacroStatsBar summary={macroSummary} />
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6 items-stretch">
@@ -108,7 +136,7 @@ export function DashboardPage({ drawerId }: DashboardPageProps) {
         open={modal.open}
         typeMeal={modal.selectedCategory}
         onClose={modal.close}
-        onMealCreated={loadMeals}
+        onMealCreated={loadDashboardData}
       />
     </>
   );
