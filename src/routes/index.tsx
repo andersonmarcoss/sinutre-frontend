@@ -9,6 +9,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { ProtectedRoute } from './ProtectRoute';
 import { DietFoodPage } from '@/pages/DietFood';
+import { MetricsPage } from '@/pages/MetricsPage';
 
 export function Router() {
   return (
@@ -34,6 +35,10 @@ export function Router() {
           <Route
             path="/foods"
             element={<DietFoodPage />}
+          />
+          <Route
+            path="/metrics"
+            element={<MetricsPage />}
           />
         </Route>
       </Routes>
