@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { SimpleHeader } from '@/components/layout/SimpleHeader';
 import { FormField } from '@/components/forms/FormField';
 import { getApiError } from '@/lib/api';
-import { createProfile, getProfile } from '@/services/profileService';
+import { createProfile, getProfile, updateProfile } from '@/services/profileService';
 import {
   LEVEL_ACTIVITY_OPTIONS,
   type LevelActivity,
@@ -17,7 +17,6 @@ export function ProfilePage() {
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
   const [levelActivity, setLevelActivity] = useState<LevelActivity>('SEDENTARIO');
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,12 +63,19 @@ export function ProfilePage() {
       return;
     }
 
-    try {
+     try {
       setSaving(true);
       setFieldErrors({});
-      const created = await createProfile(validation.data);
-      setProfile(created);
-      setSuccess('Perfil cadastrado com sucesso!');
+
+      if (profile !== null) {
+        const updated = await updateProfile(validation.data);
+        setProfile(updated);
+        setSuccess('Perfil atualizado com sucesso!');
+      } else {
+        const created = await createProfile(validation.data);
+        setProfile(created);
+        setSuccess('Perfil cadastrado com sucesso!');
+      }
     } catch (err) {
       const apiError = getApiError(err);
       setError(apiError.message);
@@ -77,6 +83,24 @@ export function ProfilePage() {
     } finally {
       setSaving(false);
     }
+  }
+
+  const hasChanges =
+  profile !== null &&
+  (targetDietDaily !== String(profile.targetDietDaily) ||
+    height !== String(profile.height) ||
+    weight !== String(profile.weight) ||
+    levelActivity !== profile.levelActivity);
+
+  function handleReset() {
+    if (!profile) return;
+    setTargetDietDaily(String(profile.targetDietDaily));
+    setHeight(String(profile.height));
+    setWeight(String(profile.weight));
+    setLevelActivity(profile.levelActivity);
+    setError(null);
+    setFieldErrors({});
+    setSuccess(null);
   }
 
   return (
@@ -124,7 +148,6 @@ export function ProfilePage() {
                   }`}
                   value={targetDietDaily}
                   onChange={(e) => setTargetDietDaily(e.target.value)}
-                  disabled={profile !== null}
                 />
               </FormField>
 
@@ -140,7 +163,6 @@ export function ProfilePage() {
                   }`}
                   value={levelActivity}
                   onChange={(e) => setLevelActivity(e.target.value as LevelActivity)}
-                  disabled={profile !== null}
                 >
                   {LEVEL_ACTIVITY_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -166,7 +188,6 @@ export function ProfilePage() {
                   }`}
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
-                  disabled={profile !== null}
                 />
               </FormField>
 
@@ -186,26 +207,34 @@ export function ProfilePage() {
                   }`}
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
-                  disabled={profile !== null}
                 />
               </FormField>
             </div>
 
-            {profile === null ? (
-              <div className="card-actions justify-end mt-2">
+            <div className="card-actions justify-end mt-2 gap-2">
+              {profile !== null && (
                 <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={saving}
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={handleReset}
+                  disabled={saving || !hasChanges}
                 >
-                  {saving ? 'Cadastrando...' : 'Cadastrar'}
+                  Desfazer
                 </button>
-              </div>
-            ) : (
-              <p className="text-xs text-base-content/60">
-                Perfil cadastrado. A edição desses dados será habilitada no próximo requisito.
-              </p>
-            )}
+              )}
+
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={saving || (profile !== null && !hasChanges)}
+              >
+                {saving
+                  ? 'Salvando...'
+                  : profile !== null
+                    ? 'Salvar alterações'
+                    : 'Cadastrar'}
+              </button>
+            </div>
           </div>
         </form>
       )}

@@ -10,3 +10,8 @@ export async function createProfile(payload: SaveProfilePayload) {
   const response = await api.post<Profile>('/profile', payload);
   return response.data;
 }
+
+export async function updateProfile(payload: SaveProfilePayload) {
+  const response = await api.put<Profile>('/profile', payload);
+  return response.data;
+}
