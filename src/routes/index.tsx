@@ -3,7 +3,7 @@ import {
   Routes,
   Route,
 } from 'react-router-dom';
-
+import { ProfilePage } from '@/pages/ProfilePage';
 import { AppLayout } from '@/layouts/AppLayout';
 import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
@@ -39,6 +39,10 @@ export function Router() {
           <Route
             path="/metrics"
             element={<MetricsPage />}
+          />
+          <Route
+            path="/profile"
+            element={<ProfilePage />}
           />
         </Route>
       </Routes>
