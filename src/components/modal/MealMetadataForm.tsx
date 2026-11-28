@@ -1,6 +1,6 @@
 import { MEAL_CATEGORIES } from '@/constants/mealCategories';
 import { FormField } from '../forms/FormField';
-
+import { getTodayLocalDateInput } from '@/utils/date';
 import { MealState } from '@/types/meal';
 
 interface MealMetadataProp{
@@ -10,6 +10,7 @@ interface MealMetadataProp{
 
 
 export function MealMetadataForm( {meal, setMeal} : MealMetadataProp) {
+  const [datePart = '', timePart = ''] = meal.eatTime.split('T');
   return (
     <section className="grid lg:grid-cols-3 gap-4 mb-8">
       <FormField label="Descrição" htmlFor="meal-description" className="lg:col-span-1">
@@ -52,20 +53,42 @@ export function MealMetadataForm( {meal, setMeal} : MealMetadataProp) {
         </select>
       </FormField>
 
-      <FormField label="Data e horário" htmlFor="meal-datetime">
-        <input
-          id="meal-datetime"
-          type="datetime-local"
-          value={meal.eatTime}
-          className="input input-bordered w-full"
-          onChange={(e) =>
-                setMeal({
-                  ...meal,
-                  eatTime: e.target.value,
-                })
-              }
-        />
-      </FormField>
+      <FormField label="Data e horário" htmlFor="meal-date">
+        <div className="grid grid-cols-2 gap-2">
+          <input
+            id="meal-date"
+            type="date"
+            value={datePart}
+            className="input input-bordered w-full"
+            onChange={(e) => {
+              const newDate = e.target.value;
+              setMeal({
+                ...meal,
+                eatTime: newDate
+                  ? timePart
+                    ? `${newDate}T${timePart}`
+                    : newDate
+                  : '',
+              });
+            }}
+          />
+          <input
+            id="meal-time"
+            type="time"
+            value={timePart}
+            aria-label="Horário da refeição"
+            className="input input-bordered w-full"
+            onChange={(e) => {
+              const newTime = e.target.value;
+              const baseDate = datePart || getTodayLocalDateInput();
+              setMeal({
+                ...meal,
+                eatTime: newTime ? `${baseDate}T${newTime}` : datePart,
+              });
+            }}
+          />
+        </div>
+   </FormField>
     </section>
   );
 }

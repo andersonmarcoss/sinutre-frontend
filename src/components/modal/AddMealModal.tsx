@@ -8,6 +8,7 @@ import { MealCategory } from '@/types/meal';
 import { createMeal } from '@/services/mealService';
 import { getApiError } from '@/lib/api';
 import { MealState } from '@/types/meal';
+import { getTodayLocalDateInput } from '@/utils/date';
 
 interface AddMealModalProps {
   open: boolean;
@@ -41,7 +42,7 @@ export function AddMealModal({
       setMeal({
         description: '',
         type: typeMeal,
-        eatTime: '',
+        eatTime: getTodayLocalDateInput(),
       });
       setItems([]);
     }
@@ -89,6 +90,10 @@ export function AddMealModal({
   }
 
   async function handleSaveMeal() {
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(meal.eatTime)) {
+      setError('Informe a data e o horário da refeição.');
+      return;
+    }
     try {
       setSaving(true);
       setError(null);
