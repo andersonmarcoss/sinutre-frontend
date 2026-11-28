@@ -38,7 +38,10 @@ export function MetricsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         <BmiCard bmi={metrics?.bmi ?? null} loading={loading} />
-        <WeeklyCaloriesCard />
+        <WeeklyCaloriesCard
+          weeklyCalories={metrics?.weeklyCalories ?? null}
+          loading={loading}
+        />
       </div>
     </div>
   );

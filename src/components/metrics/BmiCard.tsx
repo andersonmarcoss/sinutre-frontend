@@ -25,7 +25,7 @@ export function BmiCard({ bmi, loading = false }: BmiCardProps) {
 
   return (
     <section className="card bg-base-100 shadow-sm">
-      <div className="card-body justify-between gap-4">
+      <div className="card-body gap-6">
         <div className="flex items-center gap-3">
           <div className="bg-primary/10 text-primary rounded-full p-2.5">
             <Scales size={24} />
